@@ -2,13 +2,9 @@ package jackcheng1021.devops_in_java.demo.controller;
 
 import jackcheng1021.devops_in_java.demo.service.impl.CommandServiceImpl;
 import jackcheng1021.devops_in_java.demo.util.GenerateOperate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -25,24 +21,79 @@ public class CommandController {
      * @param url 目标网络
      * @return
      */
-    @RequestMapping(value = "/checknetwork", method = RequestMethod.GET)
+    @RequestMapping(value = "/check_network", method = RequestMethod.GET)
     public Map<String,Object> checkNetwork(@RequestParam String node, @RequestParam String url){
         String cmd = null;
         String result = null;
-        Map<String,Object> map = new HashMap<>(); //返回的数据集
         //测试网络的连通性
         cmd = String.format("salt '%s' cmd.run 'ping -c1 %s'",node,url);
         try{
             result = commandServiceImpl.executeCommand(cmd);
-            map.put("result",1);
-            map.put("msg","");
-            map.put("data",result);
+            return generateOperate.generateMap(1,"",result);
         }
         catch (Exception ex){
-            map.put("result",0);
-            map.put("msg","host can not connect network");
-            map.put("data","");
+            return generateOperate.generateMap(0,"host can not connect network", "");
         }
-        return map;
+    }
+
+    /**
+     * 新增租户
+     * @param parameter {"tenant": "租户名称", "user": "用户", "pwd": "密码"}
+     * @return
+     */
+    @RequestMapping(value = "/create_tenant", method = RequestMethod.POST)
+    public Map<String, Object> createTenant(@RequestBody Map<String,Object> parameter){
+        String cmd = "";
+        String result = "";
+        String tenant = parameter.get("tenant").toString();
+        String user = parameter.get("user").toString();
+        String pwd = parameter.get("user").toString();
+        cmd = String.format("liberty-tenant-create %s %s %s",tenant,user,pwd);
+        try{
+            result = commandServiceImpl.executeCommand(cmd);
+            return generateOperate.generateMap(1,"", result);
+        }catch (Exception ex){
+            return generateOperate.generateMap(0,ex.getMessage(),"");
+        }
+    }
+
+    /**
+     * 新增租户网络
+     * @param parameter {"tenant": "租户名", "tenant_net": "租户网络名", "tenant_net_cidr": "网段", "tenant_net_gateway": "网关"}
+     * @return
+     */
+    @RequestMapping(value = "/create_tenant_net", method = RequestMethod.POST)
+    public Map<String, Object> createTenantNet(@RequestBody Map<String,Object> parameter){
+        String cmd = "";
+        String result = "";
+        String tenant = parameter.get("tenant").toString();
+        String tenant_net = parameter.get("tenant_net").toString();
+        String tenant_net_cidr = parameter.get("tenant_net_cidr").toString();
+        String tenant_net_gateway = parameter.get("tenant_net_gateway").toString();
+        cmd = String.format("liberty-tenant-network-create %s %s %s %s",tenant,tenant_net,tenant_net_cidr,tenant_net_gateway);
+        try{
+            result = commandServiceImpl.executeCommand(cmd);
+            return generateOperate.generateMap(1,"", result);
+        }catch (Exception ex){
+            return generateOperate.generateMap(0,ex.getMessage(),"");
+        }
+    }
+
+    /**
+     * 默认租户创建新实例
+     * @param instanceName 实例名
+     * @return
+     */
+    @RequestMapping(value = "/create_tenant_instance")
+    public Map<String, Object> createTenantInstance(@RequestParam String instanceName){
+        String cmd = "";
+        String result = "";
+        cmd = String.format("liberty-tenant-instance-create %s",instanceName);
+        try{
+            result = commandServiceImpl.executeCommand(cmd);
+            return generateOperate.generateMap(1,"", result);
+        }catch (Exception ex){
+            return generateOperate.generateMap(0,ex.getMessage(),"");
+        }
     }
 }
