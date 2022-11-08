@@ -82,13 +82,18 @@ public class CommandController {
     /**
      * 默认租户创建新实例
      * @param instanceName 实例名
+     * @param tenantName 租户名 为空即默认租户
      * @return
      */
     @RequestMapping(value = "/create_tenant_instance")
-    public Map<String, Object> createTenantInstance(@RequestParam String instanceName){
+    public Map<String, Object> createTenantInstance(@RequestParam String instanceName, @RequestParam String tenantName){
         String cmd = "";
         String result = "";
-        cmd = String.format("liberty-tenant-instance-create %s",instanceName);
+        if (tenantName.equals("")){
+            cmd = String.format("liberty-tenant-instance-create %s",instanceName);
+        }else {
+            cmd = String.format("liberty-tenant-instance-create %s %s",tenantName, instanceName);
+        }
         try{
             result = commandServiceImpl.executeCommand(cmd);
             return generateOperate.generateMap(1,"", result);
