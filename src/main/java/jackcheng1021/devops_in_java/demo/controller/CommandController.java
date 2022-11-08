@@ -80,7 +80,7 @@ public class CommandController {
     }
 
     /**
-     * 默认租户创建新实例
+     * 租户创建新实例
      * @param instanceName 实例名
      * @param tenantName 租户名 为空即默认租户
      * @return
