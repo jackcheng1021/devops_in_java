@@ -86,13 +86,13 @@ public class CommandController {
      * @return
      */
     @RequestMapping(value = "/create_tenant_instance")
-    public Map<String, Object> createTenantInstance(@RequestParam String instanceName, @RequestParam String tenantName){
+    public Map<String, Object> createTenantInstance(@RequestParam String instanceName, @RequestParam String tenantName, @RequestParam String usage){
         String cmd = "";
         String result = "";
         if (tenantName.equals("")){
-            cmd = String.format("liberty-tenant-instance-create %s",instanceName);
+            cmd = String.format("liberty-tenant-instance-create %s %s",instanceName, usage);
         }else {
-            cmd = String.format("liberty-tenant-instance-create %s %s",tenantName, instanceName);
+            cmd = String.format("liberty-tenant-instance-create %s %s %s",tenantName, instanceName, usage);
         }
         try{
             result = commandServiceImpl.executeCommand(cmd);
