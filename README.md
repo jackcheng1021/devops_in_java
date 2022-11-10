@@ -31,6 +31,3 @@
   - 新增接口: 在云主机中部署jar包项目 /deploy_java_package_in_instance
   - 新增接口: 在云主机中部署python项目 /deploy_python_package_in_instance
   - 新增接口: 在云主机中部署web项目 /deploy_tomcat_package_in_instance
-=======
-  - 新增接口: 创建租户的实例
->>>>>>> dcd26fa1afed8ef292fb0733d3d3778a6f633960
