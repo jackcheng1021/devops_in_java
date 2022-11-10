@@ -23,4 +23,10 @@
 - 2022.11.08
   - 新增接口: 创建普通租户
   - 新增接口: 创建租户自定义网络
-  - 新增接口: 创建默认租户的实例
+  - 新增接口: 创建租户的云主机实例（instance）
+- 2022.11.10
+  - 新增接口: 获取云主机中可以安装的软件 /get_apps
+  - 新增接口: 在云主机中安装指定软件 /install_app
+  - 新增接口: 在云主机中部署jar包项目 /deploy_java_package_in_instance
+  - 新增接口: 在云主机中部署python项目 /deploy_python_package_in_instance
+  - 新增接口: 在云主机中部署web项目 /deploy_tomcat_package_in_instance
