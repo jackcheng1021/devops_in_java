@@ -5,6 +5,9 @@ import jackcheng1021.devops_in_java.demo.util.GenerateOperate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -97,6 +100,49 @@ public class CommandController {
         try{
             result = commandServiceImpl.executeCommand(cmd);
             return generateOperate.generateMap(1,"", result);
+        }catch (Exception ex){
+            return generateOperate.generateMap(0,ex.getMessage(),"");
+        }
+    }
+
+    /**
+     * 获取可以安装的软件列表
+     * @return
+     */
+    @RequestMapping(value = "/get_apps", method = RequestMethod.GET)
+    public Map<String,Object> getAppsByRepo(){
+        String cmd = "";
+        String result = "";
+        cmd = "yum list | awk '{print $1}' | awk -F '.' '{print $1}' | xargs";
+        try{
+            result = commandServiceImpl.executeCommand(cmd);
+            List<String> apps = new ArrayList<>(Arrays.asList(result.split(" ")));
+            return generateOperate.generateMap(1,"",apps);
+
+        }catch (Exception ex){
+            return generateOperate.generateMap(0,ex.getMessage(),"");
+        }
+    }
+
+    /**
+     * 给指定云主机安装软件
+     * @param parameter
+     *        ip: 云主机地址
+     *        tenant: 租户名
+     *        instanceName: 云主机实例名
+     *        app: 要安装的软件名 前端从软件库中进行选择
+     * @return
+     */
+    @RequestMapping(value = "/install_app", method = RequestMethod.POST)
+    public Map<String,Object> installAppInInstance(@RequestBody Map<String,Object> parameter){
+        String cmd = "";
+        String ip = parameter.get("ip").toString();
+        String tenant = parameter.get("tenantName").toString();
+        String instanceName = parameter.get("instanceName").toString();
+        String app = parameter.get("app").toString();
+        cmd = String.format("liberty-tenant-instance-install-app %s %s %s %s",ip,tenant,instanceName,app);
+        try{
+            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
