@@ -14,7 +14,7 @@
 
 ## 3.当前状态
 - 环境：
-  - 三个节点的openstack平台
+  - 三个节点的openstack平台： https://github.com/jackcheng1021/devops 该项目用于部署基于云计算的Devops平台
   - 三个节点部署了saltstack运维工具
 - 2022.11.06 
   - 创建项目
@@ -23,6 +23,7 @@
 - 2022.11.08
   - 新增接口: 创建普通租户
   - 新增接口: 创建租户自定义网络
+<<<<<<< HEAD
   - 新增接口: 创建租户的云主机实例（instance）
 - 2022.11.10
   - 新增接口: 获取云主机中可以安装的软件 /get_apps
@@ -30,3 +31,6 @@
   - 新增接口: 在云主机中部署jar包项目 /deploy_java_package_in_instance
   - 新增接口: 在云主机中部署python项目 /deploy_python_package_in_instance
   - 新增接口: 在云主机中部署web项目 /deploy_tomcat_package_in_instance
+=======
+  - 新增接口: 创建租户的实例
+>>>>>>> dcd26fa1afed8ef292fb0733d3d3778a6f633960
