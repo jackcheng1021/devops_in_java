@@ -30,3 +30,10 @@
   - 新增接口: 在云主机中部署jar包项目 /deploy_java_package_in_instance
   - 新增接口: 在云主机中部署python项目 /deploy_python_package_in_instance
   - 新增接口: 在云主机中部署web项目 /deploy_tomcat_package_in_instance
+- 2022.11.13
+  - 新增接口: 在云主机上部署git /deploy_git_in_instance
+  - 新增接口: 在Git上构建项目裸库 /deploy_git_repo_In_Instance
+  - 修改接口: 在云主机上部署java项目 /deploy_java_package
+  - 修改接口: 在云主机上部署python项目 /deploy_python_package
+  - 修改接口: 在云主机上部署Web项目 /deploy_web_package
+  - 新增接口: 在云主机上部署开发环境 /deploy_dev_env
