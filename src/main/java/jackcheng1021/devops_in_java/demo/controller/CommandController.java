@@ -50,7 +50,7 @@ public class CommandController {
         String result = "";
         String tenant = parameter.get("tenant").toString();
         String user = parameter.get("user").toString();
-        String pwd = parameter.get("user").toString();
+        String pwd = parameter.get("pwd").toString();
         cmd = String.format("liberty-tenant-create %s %s %s",tenant,user,pwd);
         try{
             result = commandServiceImpl.executeCommand(cmd);
@@ -62,7 +62,7 @@ public class CommandController {
 
     /**
      * 新增租户网络
-     * @param parameter {"tenant": "租户名", "tenant_net": "租户网络名", "tenant_net_cidr": "网段", "tenant_net_gateway": "网关"}
+     * @param parameter {"tenant": "租户名", "tenant_net_cidr": "网段", "tenant_net_gateway": "网关"}
      * @return
      */
     @RequestMapping(value = "/create_tenant_net", method = RequestMethod.POST)
@@ -70,10 +70,9 @@ public class CommandController {
         String cmd = "";
         String result = "";
         String tenant = parameter.get("tenant").toString();
-        String tenant_net = parameter.get("tenant_net").toString();
         String tenant_net_cidr = parameter.get("tenant_net_cidr").toString();
         String tenant_net_gateway = parameter.get("tenant_net_gateway").toString();
-        cmd = String.format("liberty-tenant-network-create %s %s %s %s",tenant,tenant_net,tenant_net_cidr,tenant_net_gateway);
+        cmd = String.format("liberty-tenant-network-create %s %s %s",tenant,tenant_net_cidr,tenant_net_gateway);
         try{
             result = commandServiceImpl.executeCommand(cmd);
             return generateOperate.generateMap(1,"", result);
@@ -89,14 +88,10 @@ public class CommandController {
      * @return
      */
     @RequestMapping(value = "/create_tenant_instance")
-    public Map<String, Object> createTenantInstance(@RequestParam String instanceName, @RequestParam String tenantName, @RequestParam String usage){
+    public Map<String, Object> createTenantInstance(@RequestParam String tenantName, @RequestParam String instanceName, @RequestParam int instanceType){
         String cmd = "";
         String result = "";
-        if (tenantName.equals("")){
-            cmd = String.format("liberty-tenant-instance-create %s %s",instanceName, usage);
-        }else {
-            cmd = String.format("liberty-tenant-instance-create %s %s %s",tenantName, instanceName, usage);
-        }
+        cmd = String.format("liberty-tenant-instance-create %s %s %d",tenantName, instanceName, instanceType);
         try{
             result = commandServiceImpl.executeCommand(cmd);
             return generateOperate.generateMap(1,"", result);
@@ -136,11 +131,11 @@ public class CommandController {
     @RequestMapping(value = "/install_app", method = RequestMethod.POST)
     public Map<String,Object> installAppInInstance(@RequestBody Map<String,Object> parameter){
         String cmd = "";
-        String ip = parameter.get("ip").toString();
+        String ip = parameter.get("hostIp").toString();
         String tenant = parameter.get("tenantName").toString();
-        String instanceName = parameter.get("instanceName").toString();
+        String instancePass = parameter.get("rootPass").toString();
         String app = parameter.get("app").toString();
-        cmd = String.format("liberty-tenant-instance-install-app %s %s %s %s",ip,tenant,instanceName,app);
+        cmd = String.format("liberty-tenant-instance-install-app %s %s %s %s",ip,tenant,instancePass,app);
         try{
             return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
         }catch (Exception ex){
@@ -149,20 +144,23 @@ public class CommandController {
     }
 
     /**
-     * 将web项目部署到云主机
+     * 在云主机上部署git
      * @param parameter
-     *        ip: 云主机ip地址
-     *        tenant: 云主机的所属租户名
-     *        packageUrl: 项目所在github的地址
+     *        hostIp: 云主机地址
+     *        hostRootPass: root密码
+     *        tenantName: 租户名
+     *        gitUser: git账户
+     *        gitPass: git账户密码
      * @return
      */
-    @RequestMapping(value = "/deploy_tomcat_package_in_instance", method = RequestMethod.POST)
-    public Map<String,Object> deployTomcatPackageInInstance(@RequestBody Map<String,Object> parameter){
-        String cmd = "";
-        String ip = parameter.get("ip").toString();
+    @RequestMapping(value = "/deploy_git_in_instance", method = RequestMethod.POST)
+    public Map<String,Object> deployGitInInstance(@RequestBody Map<String,Object> parameter){
+        String ip = parameter.get("hostIp").toString();
+        String pass = parameter.get("hostRootPass").toString();
         String tenant = parameter.get("tenantName").toString();
-        String packageUrl = parameter.get("packageUrl").toString();
-        cmd = String.format("liberty-tenant-instance-deploy-tomcat-package %s %s %s",ip,tenant,packageUrl);
+        String gitUser = parameter.get("gitUser").toString();
+        String gitPass = parameter.get("gitPass").toString();
+        String cmd = String.format("liberty-tenant-instance-git %s %s %s %s %s",ip,pass,tenant,gitUser,gitPass);
         try {
             return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
         }catch (Exception ex){
@@ -171,21 +169,50 @@ public class CommandController {
     }
 
     /**
-     * 将Java项目部署到云主机
+     * 在Git上构建项目裸库
      * @param parameter
-     *        ip: 云主机ip地址
-     *        tenant: 云主机的所属租户名
-     *        packageUrl: 项目所在github的地址
+     *        hostIp: 主机ip
+     *        tenantName: 租户名
+     *        gitUser: git账户
+     *        gitPass: git账户密码
+     *        gitRepo: git仓库名
      * @return
      */
-    @RequestMapping(value = "/deploy_java_package_in_instance", method = RequestMethod.POST)
-    public Map<String,Object> deployJavaPackageInInstance(@RequestBody Map<String,Object> parameter){
-        String ip = parameter.get("ip").toString();
+    @RequestMapping(value = "/deploy_git_repo_In_Instance", method = RequestMethod.POST)
+    public Map<String,Object> deployGitRepoInInstance(@RequestBody Map<String,Object> parameter){
+        String ip = parameter.get("hostIp").toString();
+        String tenant = parameter.get("tenantName").toString();
+        String gitUser = parameter.get("gitUser").toString();
+        String gitPass = parameter.get("gitPass").toString();
+        String gitRepo = parameter.get("gitRepo").toString();
+        String cmd = String.format("liberty-tenant-instance-git-repo %s %s %s %s %s",ip,tenant,gitUser,gitPass,gitRepo);
+        try{
+            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+
+        }catch (Exception ex){
+            return generateOperate.generateMap(0, ex.getMessage(), "");
+        }
+    }
+
+    /**
+     * 在云主机上部署java项目
+     * @param parameter
+     *        hostIp: 主机ip
+     *        tenantName: 租户名
+     *        packageUrl: 项目所在的URL路径
+     *        packageVersion: 版本号
+     *        rootPass: 主机的root密码
+     * @return
+     */
+    @RequestMapping(value = "/deploy_java_package", method = RequestMethod.POST)
+    public Map<String,Object> deployJavaPackage(@RequestBody Map<String,Object> parameter){
+        String ip = parameter.get("hostIp").toString();
         String tenant = parameter.get("tenantName").toString();
         String packageUrl = parameter.get("packageUrl").toString();
         String packageVersion = parameter.get("packageVersion").toString();
-        String cmd = String.format("liberty-tenant-instance-deploy-java-package %s %s %s %s",ip,tenant,packageUrl,packageVersion);
-        try {
+        String rootPass = parameter.get("rootPass").toString();
+        String cmd = String.format("liberty-tenant-instance-deploy-java-package %s %s %s %s %s",ip,tenant,packageUrl,packageVersion,rootPass);
+        try{
             return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
@@ -193,24 +220,72 @@ public class CommandController {
     }
 
     /**
-     * 将python项目部署到云主机
+     * 在云主机上部署python项目
      * @param parameter
-     *        ip: 云主机ip地址
-     *        tenant: 云主机的所属租户名
-     *        packageUrl: 项目所在github的地址
+     *        hostIp: 主机ip
+     *        tenantName: 租户名
+     *        packageUrl: 项目所在的URL路径
+     *        scriptName: 启动的脚本名
+     *        packageVersion: 版本号
+     *        rootPass: 主机密码
      * @return
      */
-    @RequestMapping(value = "/deploy_python_package_in_instance", method = RequestMethod.POST)
-    public Map<String,Object> deployPythonPackageInInstance(@RequestBody Map<String,Object> parameter){
-        String ip = parameter.get("ip").toString();
+    @RequestMapping(value = "/deploy_python_package", method = RequestMethod.POST)
+    public Map<String,Object> deployPythonPackage(@RequestBody Map<String,Object> parameter){
+        String ip = parameter.get("hostIp").toString();
         String tenant = parameter.get("tenantName").toString();
         String packageUrl = parameter.get("packageUrl").toString();
+        String scriptName = parameter.get("scriptName").toString();
         String packageVersion = parameter.get("packageVersion").toString();
-        String cmd = String.format("liberty-tenant-instance-deploy-python-package %s %s %s %s",ip,tenant,packageUrl,packageVersion);
-        try {
+        String rootPass = parameter.get("rootPass").toString();
+        String cmd = String.format("liberty-tenant-instance-deploy-python-package %s %s %s %s %s %s",ip,tenant,packageUrl,scriptName,packageVersion,rootPass);
+        try{
             return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
     }
+
+    /**
+     * 在云主机上部署Web项目
+     * @param parameter
+     *        hostIp: 主机ip
+     *        tenantName: 租户名
+     *        packageUrl: 项目所在的URL路径
+     *        rootPass: 主机密码
+     * @return
+     */
+    @RequestMapping(value = "/deploy_web_package", method = RequestMethod.POST)
+    public Map<String,Object> deployWebPackage(@RequestBody Map<String,Object> parameter){
+        String ip = parameter.get("hostIp").toString();
+        String tenant = parameter.get("tenantName").toString();
+        String packageUrl = parameter.get("packageUrl").toString();
+        String rootPass = parameter.get("rootPass").toString();
+        String cmd = String.format("liberty-tenant-instance-deploy-tomcat-package %s %s %s %s",ip,tenant,packageUrl,rootPass);
+        try {
+            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+        }catch (Exception ex){
+            return generateOperate.generateMap(0, ex.getMessage(), "");
+        }
+    }
+
+    /**
+     * 在云主机上部署开发环境
+     * @param parameter
+     *        hostIp: 主机ip
+     *        rootPass: 主机密码
+     * @return
+     */
+    @RequestMapping(value = "/deploy_dev_env", method = RequestMethod.POST)
+    public Map<String,Object> deployDevEnv(@RequestBody Map<String,Object> parameter){
+        String ip = parameter.get("hostIp").toString();
+        String rootPass = parameter.get("rootPass").toString();
+        String cmd = String.format("liberty-tenant-instance-dev %s %s",ip,rootPass);
+        try{
+            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+        }catch (Exception ex){
+            return generateOperate.generateMap(0,ex.getMessage(),"");
+        }
+    }
+
 }
