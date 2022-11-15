@@ -1,5 +1,6 @@
 package jackcheng1021.devops_in_java.demo.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import jackcheng1021.devops_in_java.demo.service.impl.CommandServiceImpl;
 import jackcheng1021.devops_in_java.demo.util.GenerateOperate;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,7 @@ public class CommandController {
         cmd = String.format("liberty-tenant-create %s %s %s",tenant,user,pwd);
         try{
             result = commandServiceImpl.executeCommand(cmd);
-            return generateOperate.generateMap(1,"", result);
+            return generateOperate.generateMap(1,"", JSONObject.parseObject(result));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
@@ -75,7 +76,7 @@ public class CommandController {
         cmd = String.format("liberty-tenant-network-create %s %s %s",tenant,tenant_net_cidr,tenant_net_gateway);
         try{
             result = commandServiceImpl.executeCommand(cmd);
-            return generateOperate.generateMap(1,"", result);
+            return generateOperate.generateMap(1,"", JSONObject.parseObject(result));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
@@ -94,7 +95,7 @@ public class CommandController {
         cmd = String.format("liberty-tenant-instance-create %s %s %d",tenantName, instanceName, instanceType);
         try{
             result = commandServiceImpl.executeCommand(cmd);
-            return generateOperate.generateMap(1,"", result);
+            return generateOperate.generateMap(1,"", JSONObject.parseObject(result));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
@@ -137,7 +138,7 @@ public class CommandController {
         String app = parameter.get("app").toString();
         cmd = String.format("liberty-tenant-instance-install-app %s %s %s %s",ip,tenant,instancePass,app);
         try{
-            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+            return generateOperate.generateMap(1,"",JSONObject.parseObject(commandServiceImpl.executeCommand(cmd)));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
@@ -162,7 +163,7 @@ public class CommandController {
         String gitPass = parameter.get("gitPass").toString();
         String cmd = String.format("liberty-tenant-instance-git %s %s %s %s %s",ip,pass,tenant,gitUser,gitPass);
         try {
-            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+            return generateOperate.generateMap(1,"",JSONObject.parseObject(commandServiceImpl.executeCommand(cmd)));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
@@ -187,7 +188,7 @@ public class CommandController {
         String gitRepo = parameter.get("gitRepo").toString();
         String cmd = String.format("liberty-tenant-instance-git-repo %s %s %s %s %s",ip,tenant,gitUser,gitPass,gitRepo);
         try{
-            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+            return generateOperate.generateMap(1,"",JSONObject.parseObject(commandServiceImpl.executeCommand(cmd)));
 
         }catch (Exception ex){
             return generateOperate.generateMap(0, ex.getMessage(), "");
@@ -213,7 +214,7 @@ public class CommandController {
         String rootPass = parameter.get("rootPass").toString();
         String cmd = String.format("liberty-tenant-instance-deploy-java-package %s %s %s %s %s",ip,tenant,packageUrl,packageVersion,rootPass);
         try{
-            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+            return generateOperate.generateMap(1,"",JSONObject.parseObject(commandServiceImpl.executeCommand(cmd)));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
@@ -240,7 +241,7 @@ public class CommandController {
         String rootPass = parameter.get("rootPass").toString();
         String cmd = String.format("liberty-tenant-instance-deploy-python-package %s %s %s %s %s %s",ip,tenant,packageUrl,scriptName,packageVersion,rootPass);
         try{
-            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+            return generateOperate.generateMap(1,"",JSONObject.parseObject(commandServiceImpl.executeCommand(cmd)));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
@@ -263,7 +264,7 @@ public class CommandController {
         String rootPass = parameter.get("rootPass").toString();
         String cmd = String.format("liberty-tenant-instance-deploy-tomcat-package %s %s %s %s",ip,tenant,packageUrl,rootPass);
         try {
-            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+            return generateOperate.generateMap(1,"",JSONObject.parseObject(commandServiceImpl.executeCommand(cmd)));
         }catch (Exception ex){
             return generateOperate.generateMap(0, ex.getMessage(), "");
         }
@@ -282,10 +283,9 @@ public class CommandController {
         String rootPass = parameter.get("rootPass").toString();
         String cmd = String.format("liberty-tenant-instance-dev %s %s",ip,rootPass);
         try{
-            return generateOperate.generateMap(1,"",commandServiceImpl.executeCommand(cmd));
+            return generateOperate.generateMap(1,"",JSONObject.parseObject(commandServiceImpl.executeCommand(cmd)));
         }catch (Exception ex){
             return generateOperate.generateMap(0,ex.getMessage(),"");
         }
     }
-
 }

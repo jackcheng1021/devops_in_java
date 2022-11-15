@@ -37,3 +37,5 @@
   - 修改接口: 在云主机上部署python项目 /deploy_python_package
   - 修改接口: 在云主机上部署Web项目 /deploy_web_package
   - 新增接口: 在云主机上部署开发环境 /deploy_dev_env
+- 2022.11.16
+  - 修改接口：接口的脚本执行结果返回为json结构
